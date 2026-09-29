@@ -1,5 +1,5 @@
 """
-ASGI config for aibar_gestor_de_proyectos project.
+ASGI config for aibar_gestor_de_proyectos workspaces.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

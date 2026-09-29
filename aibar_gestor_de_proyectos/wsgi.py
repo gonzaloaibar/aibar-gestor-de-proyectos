@@ -1,5 +1,5 @@
 """
-WSGI config for aibar_gestor_de_proyectos project.
+WSGI config for aibar_gestor_de_proyectos workspaces.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
