@@ -1,38 +1,7 @@
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
-
-class WorkspaceMemberShips(models.Model):
-
-    ROLES = [
-        (0, 'Viewer'),
-        (1, 'Member'),
-        (2,'Admin'),
-        (3,'Owner'),
-    ]
-    STATUS_CHOICES = [
-        ('active','active'),
-        ('inactive','inactive'),
-        ('suspended','suspended'),
-    ]
-    rol = models.IntegerField(choices=ROLES)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
-    joined_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True)
-
-    workspace = models.ForeignKey('Workspace', on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'workspace_membership'
-        verbose_name_plural = 'WorkspacesMemberships'
-        ordering = ('workspace', 'joined_at')
-        constraints = [
-            models.UniqueConstraint(fields=['workspace', 'role'], name='uq_workspace_membership_role'),
-        ]
-
-    def __str__(self):
-        return f"{self.workspace.name}, {self.role}, {self.status}, {self.joined_at}"
-
 class Workspace(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -40,7 +9,7 @@ class Workspace(models.Model):
         max_length=160,
         unique=True,
     )
-    create_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -52,7 +21,47 @@ class Workspace(models.Model):
         verbose_name_plural = 'Workspaces'
 
     def __str__(self):
-        return f"{self.name}, {self.slug}, {self.create_at}"
+        return f"{self.name}, {self.slug}, {self.created_at}"
+
+
+
+class WorkspaceMemberShip(models.Model):
+
+    class Role(models.IntegerChoices):
+        VIEWER = 0, 'Viewer'
+        MEMBER = 1, 'Member'
+        ADMIN = 2, 'Admin'
+        OWNER = 3, 'Owner'
+
+    class Status(models.TextChoices):
+        ACTIVE = 'active', 'Active'
+        INACTIVE = 'inactive', 'Inactive'
+        SUSPENDED = 'suspended', 'Suspended'
+
+
+    role = models.PositiveSmallIntegerField(choices=Role.choices)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    #relaciones
+    workspace = models.ForeignKey('Workspace', on_delete=models.CASCADE,
+                                  related_name='memberships')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name='workspace_memberships')
+
+    class Meta:
+        db_table = 'workspace_membership'
+        verbose_name_plural = 'WorkspacesMemberships'
+        ordering = ('workspace', 'joined_at')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['workspace', 'user'], name='uq_workspace_membership_user'
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.workspace.name}, {self.role}, {self.status}, {self.joined_at}"
 
 
 class Project(models.Model):
@@ -61,10 +70,11 @@ class Project(models.Model):
         max_length=160,
         unique=True,
     )
-    descripcion = models.TextField(blank=True)
-    create_at = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    wokspace = models.ForeignKey('Workspace', on_delete=models.CASCADE)
+    wokspace = models.ForeignKey('Workspace', on_delete=models.CASCADE,
+                                 related_name='projects')
 
     class Meta:
         db_table = 'project'
@@ -78,4 +88,4 @@ class Project(models.Model):
                                     name='uq_project_slug_workspace'),]
 
     def __str__(self):
-        return f"{self.name}, {self.slug}, {self.create_at}, {self.wokspace}"
+        return f"{self.name}, {self.slug}, {self.created_at}, {self.wokspace}"
