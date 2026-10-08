@@ -17,7 +17,7 @@ class Workspace(models.Model):
         indexes = [
             models.Index(fields=['slug'], name='idx_workspace_slug'),
         ]
-        ordering = ('name', 'create_at')
+        ordering = ('name', 'created_at')
         verbose_name_plural = 'Workspaces'
 
     def __str__(self):
@@ -78,7 +78,7 @@ class Project(models.Model):
 
     class Meta:
         db_table = 'project'
-        ordering = ('name', 'create_at')
+        ordering = ('name', 'created_at')
         verbose_name_plural = 'Projects'
         indexes = [
             models.Index(fields=['wokspace'], name='idx_projects_wokspace'),
