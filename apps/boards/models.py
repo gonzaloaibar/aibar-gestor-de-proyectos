@@ -6,7 +6,7 @@ from django.db import models
 
 class Board(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=160,unique=True,)
+    slug = models.SlugField(max_length=160,)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

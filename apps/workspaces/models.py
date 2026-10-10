@@ -66,14 +66,11 @@ class WorkspaceMemberShip(models.Model):
 
 class Project(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(
-        max_length=160,
-        unique=True,
-    )
+    slug = models.SlugField(max_length=160,)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    wokspace = models.ForeignKey('Workspace', on_delete=models.CASCADE,
+    workspace = models.ForeignKey('Workspace', on_delete=models.CASCADE,
                                  related_name='projects')
 
     class Meta:
@@ -81,11 +78,11 @@ class Project(models.Model):
         ordering = ('name', 'created_at')
         verbose_name_plural = 'Projects'
         indexes = [
-            models.Index(fields=['wokspace'], name='idx_projects_wokspace'),
+            models.Index(fields=['workspace'], name='idx_projects_workspace'),
         ]
         constraints = [
-            models.UniqueConstraint(fields=['wokspace', 'slug'],
+            models.UniqueConstraint(fields=['workspace', 'slug'],
                                     name='uq_project_slug_workspace'),]
 
     def __str__(self):
-        return f"{self.name}, {self.slug}, {self.created_at}, {self.wokspace}"
+        return f"{self.name}, {self.slug}, {self.created_at}, {self.workspace}"
