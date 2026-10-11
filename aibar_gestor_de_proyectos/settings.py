@@ -159,4 +159,3 @@ SPECTACULAR_SETTINGS = {
 
 CORS_ALLOW_ALL_ORIGINS = True  # solo en desarrollo
 
-#usuario admin --> adminGon@gmail.com (123)
