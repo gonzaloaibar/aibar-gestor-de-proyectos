@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 import os
+from datetime import timedelta
+
 from decouple import config
 from pathlib import Path
 
@@ -144,18 +146,44 @@ MAILERS = {
     },
 }
 
+#configuracion django rest
 REST_FRAMEWORK = {
+    #autenticacion por medio de JWT
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    #IsAuthenticated como permiso por defecto para todo usuario no autenticado 401
+    'DEFAULT_PERMISSION_CLASSES': (
+            'rest_framework.permissions.IsAuthenticated',
+        ),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
+    #uso Throttling para limitar la cantidad de solicitudes http que un cliente puede realizar
+    'DEFAULT_THROTTLE_RATES': {
+            'anon': '60/min', #un usuario no autenticado puede realizar hasta 60 x minuto
+            'user': '300/min', #un usuario autenticado puede realizar hasta 300 x minuto
+            'auth': '10/min',   # scope propio para register/login/refresh 10 x minuto
+        },
+}
+
+#configuracion de JWT
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'SIGNING_KEY': SECRET_KEY,
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Aibar gestor de proyectos API',
-    'VERSION': '1.0.0',
+    'DESCRIPTION': 'Plataforma de gestión de proyectos colaborativos',
+    'VERSION': '0.1.0',
 }
 
 CORS_ALLOW_ALL_ORIGINS = True  # solo en desarrollo
 
+# CORS: con django-environ, en .env:
+# CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+#CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
