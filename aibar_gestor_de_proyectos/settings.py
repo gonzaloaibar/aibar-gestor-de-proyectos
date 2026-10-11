@@ -159,6 +159,12 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 
+    #clases para los limitadores de las solicitudes
+    'DEFAULT_THROTTLE_CLASSES': (
+            'rest_framework.throttling.AnonRateThrottle',
+            'rest_framework.throttling.UserRateThrottle',
+        ),
+
     #uso Throttling para limitar la cantidad de solicitudes http que un cliente puede realizar
     'DEFAULT_THROTTLE_RATES': {
             'anon': '60/min', #un usuario no autenticado puede realizar hasta 60 x minuto

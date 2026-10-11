@@ -29,7 +29,7 @@ class RefreshView(TokenRefreshView):
     throttle_scope = 'auth'
 
 #Datos del usuario autenticado (email no editable)
-class UserView(generics.RetrieveUpdateAPIView):
+class MeView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
 
     #devuelve una instancia del objeto que debe usarse
