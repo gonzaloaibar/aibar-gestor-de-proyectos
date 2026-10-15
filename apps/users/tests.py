@@ -8,6 +8,10 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 PASSWORD = 'pasa-maestro-922' #clave para el usuario de prueba en los test
 
+'''si no sabes lo que es client: basicamente simula un navegador dentro de las pruebas
+para poder realizar las peticiones de manera automatica en los test'''
+
+#la clase APITestCase sirve para pruebas de requests HTTP contra los endpoints DRF
 class AuthTest(APITestCase):
     #configuracion de urls
     def setUp(self):
@@ -21,10 +25,11 @@ class AuthTest(APITestCase):
 
     #creo al usuario para los test
     def _create_user(self, email='ana@example.com'):
-        return User.objects.create_user(email, email, PASSWORD)
+        return User.objects.create_user(email=email, password=PASSWORD)
 
     '''tests del registro de usuario'''
 
+    #el registro es la creacion en si del usuario, por eso no llamo a _create_user, debo probar el endpoint del registro
     def test_register_ok(self):
         #creo el registro
         r=self.client.post(self.register_url,{'email': 'Ana@Example.com', 'password': PASSWORD,
@@ -34,5 +39,40 @@ class AuthTest(APITestCase):
         self.assertEqual(r.data['email'], 'ana@example.com')
         #assertNotIn pregunta si password no esta en el registro
         self.assertNotIn('password', r.data)
-        #assertTrue chequea si la expresion es verdadera
+        #assertTrue chequea si la expresion es verdadera, osea pregunta si existe el usuario recien registrado
         self.assertTrue(User.objects.get(email='ana@example.com').check_password(PASSWORD))
+
+    def test_register_duplicate_email(self):
+        self._create_user()
+        #intento registrar un usuario con el mismo email
+        r=self.client.post(self.register_url,{'email': 'ANA@example.com', 'password': PASSWORD})
+
+        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+    '''tets login/refresh'''
+
+    def test_login_ok(self):
+        self._create_user()
+        l= self.client.post(self.login_url,{'email': 'ana@example.com', 'password': PASSWORD})
+
+        self.assertEqual(l.status_code, status.HTTP_200_OK)
+        self.assertIn('access', l.data)
+        self.assertIn('refresh', l.data)
+
+    def test_login_wrong_password(self):
+        self._create_user()
+        l=self.client.post(self.login_url,{'email': 'ana@example.com', 'password': 'incorrectaxd'})
+
+        self.assertEqual(l.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_refresh_ok(self):
+        self._create_user()
+        #recordar que al realizar un login exitoso se le brinda un acces token y un refresh token
+        tokens = self.client.post(self.login_url,{
+        'email':'ana@example.com', 'password': PASSWORD}).data
+        r=self.client.post(self.refresh_url,{'refresh':tokens['refresh']})
+
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertIn('access', r.data)
+

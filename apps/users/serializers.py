@@ -17,7 +17,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
     def validate_email(self, email):
-        email=email.strip().lower()
+        email=email.strip().lower()#normaliza a minuscula y elimina espacios en blanco
         if User.objects.filter(email__iexact=email).exists():
             raise serializers.ValidationError("Email already exists")
         return email
