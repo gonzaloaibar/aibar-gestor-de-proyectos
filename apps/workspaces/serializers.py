@@ -1,11 +1,26 @@
 from rest_framework import serializers
-from .models import Workspace
+from .models import Workspace, WorkspaceMemberShip, Project
 
 class WorkspaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workspace
         fielsd=('name', 'description', 'slug', 'created_at', 'updated_at')
-        read_only_fields=('created_at', 'updated_at', 'slug')
+        read_only_fields=('created_at', 'slug')
 
+
+
+class WorkspaceMemberShipSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = WorkspaceMemberShip
+        fields=('workspace', 'user', 'role', 'status', 'joined_at', 'updated_at')
+        read_only_fields=('joined_at',)
+
+class ProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields=('name', 'slug', 'description', 'created_at', 'updated_at', 'workspace')
+        read_only_fields=('created_at', 'slug')
 
