@@ -103,3 +103,10 @@ Crear/editar/eliminar proyecto: solo Admin y Owner.
 A nivel objeto verifica que el proyecto pertenezca al workspace de la URL.
 '''
 # ------------------------------------------------------------------
+
+#heredando de AdminCanWrite ya que el crud esta permitido solo para Admin y Owner
+class ProjectPermission(AdminCanWrite):
+
+    def has_object_permission(self, request, view, obj):
+        workspace = get_workspace(request, view)
+        return workspace is not None and obj.workspace == workspace.pk
