@@ -11,11 +11,16 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
 
 class WorkspaceMemberShipSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = WorkspaceMemberShip
-        fields=('workspace', 'user', 'role', 'status', 'joined_at', 'updated_at')
-        read_only_fields=('joined_at',)
+        fields = [
+            'id',
+            'workspace',
+            'user',
+            'role',
+            'status',
+        ]
+        read_only_fields = ['id', 'status']
 
 class ProjectSerializer(serializers.ModelSerializer):
 

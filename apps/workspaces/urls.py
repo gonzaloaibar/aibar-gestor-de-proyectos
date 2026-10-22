@@ -1,7 +1,8 @@
-from django.urls import path
-from .api import WorkspaceViewSet, WorkspaceMemberShipViewSet, ProjectViewSet
+from .api import WorkspaceViewSet, ProjectViewSet
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [
-    path('workspaces/', WorkspaceViewSet.as_view(), name='workspaces'),
-    path('projects/', ProjectViewSet.as_view(), name='projects'),
-]
+router = DefaultRouter()
+
+router.register(r'workspaces', WorkspaceViewSet, basename='workspaces')
+router.register(r'projects', ProjectViewSet, basename='projects')
+urlpatterns = router.urls

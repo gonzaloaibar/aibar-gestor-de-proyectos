@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('api/auth/', include('apps.users.urls')), #rutas de los edpoints de users
+    path('api/', include('apps.workspaces.urls')), #rutas de los endpoints de workspaces
 
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/',  SpectacularSwaggerView.as_view(url_name='schema'), name='docs'),
