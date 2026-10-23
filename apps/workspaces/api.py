@@ -3,7 +3,6 @@ from .serializers import WorkspaceSerializer, ProjectSerializer
 from .permissions import WorkspaceRolePermission, ProjectPermission, AdminCanWrite, OwnerCanWrite, get_workspace
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.decorators import action
 from django.db import transaction
 from django.utils.text import slugify
 
