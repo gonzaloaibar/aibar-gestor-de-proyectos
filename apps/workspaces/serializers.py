@@ -5,8 +5,8 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workspace
-        fielsd=('name', 'description', 'slug', 'created_at', 'updated_at')
-        read_only_fields=('created_at', 'slug')
+        fields=('id','name', 'description', 'slug', 'created_at', 'updated_at')
+        read_only_fields=('id','created_at', 'slug')
 
 
 
@@ -26,6 +26,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields=('name', 'slug', 'description', 'created_at', 'updated_at', 'workspace')
-        read_only_fields=('created_at', 'slug')
+        fields=('id','name', 'slug', 'description', 'created_at', 'updated_at', 'workspace')
+        read_only_fields=('id','created_at', 'slug', 'workspace')
 

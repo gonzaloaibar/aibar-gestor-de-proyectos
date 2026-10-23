@@ -1,22 +1,19 @@
 from django.shortcuts import get_object_or_404
-from django.utils import cache
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 from .models import Workspace, WorkspaceMemberShip
 
-Role=WorkspaceMemberShip.role
-Status=WorkspaceMemberShip.status
+Role=WorkspaceMemberShip.Role
+Status=WorkspaceMemberShip.Status
 
 #este metodo tomara el workspace de la url
 def get_workspace(request, view):
     #obtengo el slug atravez de la instancia de la vista
-    slug = view.kwargs.get('slug')
+    slug = view.kwargs.get(getattr(view, 'workspace_kwarg', 'slug'))
 
     if slug is None:
         return None
 
-    #request.__dict__ es el diccionario de atributos del objeto request
-    #setdefault crea un diccionario vacio si todavia no existe, ese diccionario sera el cache, ahi estaran los request realizados
     #uso cache porque en cada peticion DRF llama a los permisos, y cada uno necesita workspace y la membresia, sin cache se hace la misma consulta varias veces
     cache = request.__dict__.setdefaul('_aibar_workspaces', {})
 
@@ -48,7 +45,7 @@ def get_membership(request, workspace):
 class WorkspaceRolePermission(BasePermission):
 
     min_role=Role.MEMBER
-    messaje='No tenés permisos para realizar esta acción en este espacio de trabajo.'
+    message='No tenés permisos para realizar esta acción en este espacio de trabajo.'
 
     #este metodo es basicamente para preguntar si la request tiene permisos para acceder a la vista
     def has_permission(self, request, view):
@@ -84,4 +81,4 @@ class ProjectPermission(AdminCanWrite):
 
     def has_object_permission(self, request, view, obj):
         workspace = get_workspace(request, view)
-        return workspace is not None and obj.workspace == workspace.pk
+        return workspace is not None and obj.workspace_id == workspace.pk
